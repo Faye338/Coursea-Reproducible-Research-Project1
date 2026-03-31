@@ -8,18 +8,157 @@ output:
 
 ## Loading and preprocessing the data
 
+```{r libraries, include = FALSE}
+library(dplyr)
+library(ggplot2)
+```
 
+```{r loading data}
+activity <- read.csv(unz("activity.zip", "activity.csv"))
+```
 
 ## What is mean total number of steps taken per day?
 
+```{r total number of steps taken per day}
+activity %>%
+    group_by(
+        date
+    ) %>%
+    summarise(
+        total = sum(steps)
+    ) -> daily_activity
 
+head(daily_activity)
+```
+
+```{r histogram of total number of steps taken each day}
+ggplot(daily_activity, aes(total)) + 
+    geom_histogram(binwidth = 1000, color = "cadetblue4", fill = "cadetblue3") + 
+    labs(x = "Total number of steps taken everyday", y = "Count",
+         title = "Distribution of total number of steps taken each day") +
+    theme_minimal()
+```
+
+```{r mean and median of the total number of steps taken per day}
+mean_daily_steps <- mean(daily_activity$total, na.rm = TRUE)
+median_daily_steps <- median(daily_activity$total, na.rm = TRUE)
+```
+
+The average number of steps taken per day is `r sprintf("%.2f", mean_daily_steps)`, while the median is `r sprintf("%.2f", median_daily_steps)`.
 
 ## What is the average daily activity pattern?
 
+```{r average number of steps during interval}
+activity %>%
+    group_by(
+        interval
+        ) %>%
+    summarise(
+        mean_steps = mean(steps, na.rm = TRUE)
+    ) -> interval_activity
+```
 
+```{r time series plot}
+ggplot(interval_activity, aes(x = interval, y = mean_steps)) + 
+    geom_line(color = "firebrick4") +
+    labs(x = "Interval", y = "Average number of steps", 
+         title = "Average number of steps during interval") +
+    theme_minimal()
+```
+
+```{r max number of steps}
+max_steps_interval <- interval_activity[which.max(interval_activity$mean_steps),]$interval
+```
+
+On average, the highest number of steps was recorded during the interval numbered `r max_steps_interval`.
 
 ## Imputing missing values
 
+```{r number of NA}
+na_count <- sum(is.na(activity))
+```
 
+The total number of missing values is `r na_count`.
+
+Based on the analyses conducted in the previous steps, the most reasonable approach is to impute the missing values using the average number of steps for the corresponding interval.
+
+```{r imputation}
+activity %>%
+  left_join(interval_activity, by = "interval") %>%
+  mutate(steps = ifelse(is.na(steps), mean_steps, steps)) %>%
+  select(-mean_steps) -> activity_imputed
+```
+
+```{r total number of steps taken per day after imputation}
+activity_imputed %>%
+    group_by(
+        date
+    ) %>%
+    summarise(
+        total = sum(steps)
+    ) -> imputed_daily_activity
+
+head(imputed_daily_activity)
+```
+
+
+```{r histogram of total number of steps taken everyday after imputation}
+ggplot(imputed_daily_activity, aes(total)) + 
+    geom_histogram(binwidth = 1000, color = "cadetblue4", fill = "cadetblue3") + 
+    labs(x = "Total number of steps taken everyday", y = "Count",
+         title = "Distribution of total number of steps taken everyday after imputation") +
+    theme_minimal()
+```
+
+```{r mean and median of the total number of steps taken per day after imputation}
+mean_daily_steps_imputed <- mean(imputed_daily_activity$total, na.rm = TRUE)
+median_daily_steps_imputed <- median(imputed_daily_activity$total, na.rm = TRUE)
+```
+
+After data imputation, the mean is `r sprintf("%.2f", mean_daily_steps_imputed)` and the median is `r sprintf("%.2f", median_daily_steps_imputed)`.
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+```{r set local time to English, include = FALSE}
+old_locale <- Sys.getlocale("LC_TIME")
+
+Sys.setlocale("LC_TIME", "C")
+```
+
+
+```{r add weekday information}
+activity_imputed %>%
+    mutate(
+        date = as.Date(date),
+        weekday = weekdays(date),
+        day_type = factor(ifelse(weekday %in% c("Saturday", "Sunday"),
+                             "weekend", "weekday"))
+    ) -> activity_imputed_weekdays
+
+```
+
+```{r average number of steps during interval divided by day_type}
+activity_imputed_weekdays %>%
+    group_by(
+        day_type,
+        interval
+        ) %>%
+    summarise(
+        mean_steps = mean(steps, na.rm = TRUE),
+        .groups = "drop"
+    ) -> interval_activity_imputed_weekdays
+```
+
+```{r time series plot for weekdays and weekends}
+ggplot(interval_activity_imputed_weekdays, aes(x = interval, y = mean_steps)) + 
+    geom_line(color = "firebrick4") +
+    facet_grid(day_type ~.) +
+    labs(x = "Interval", y = "Average number of steps", 
+         title = "Average number of steps during interval") +
+    theme_bw()
+```
+
+```{r Restore previous locale time, include = FALSE}
+Sys.setlocale("LC_TIME", old_locale)
+```
+
