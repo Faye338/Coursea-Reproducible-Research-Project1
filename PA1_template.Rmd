@@ -31,7 +31,7 @@ activity %>%
 head(daily_activity)
 ```
 
-```{r histogram of total number of steps taken each day}
+```{r histogram_of_total_number_of_steps_taken_each_day}
 ggplot(daily_activity, aes(total)) + 
     geom_histogram(binwidth = 1000, color = "cadetblue4", fill = "cadetblue3") + 
     labs(x = "Total number of steps taken everyday", y = "Count",
@@ -58,7 +58,7 @@ activity %>%
     ) -> interval_activity
 ```
 
-```{r time series plot}
+```{r time_series_plot}
 ggplot(interval_activity, aes(x = interval, y = mean_steps)) + 
     geom_line(color = "firebrick4") +
     labs(x = "Interval", y = "Average number of steps", 
@@ -102,7 +102,7 @@ head(imputed_daily_activity)
 ```
 
 
-```{r histogram of total number of steps taken everyday after imputation}
+```{r histogram_of_total_number_of_steps_taken_everyday_after_imputation}
 ggplot(imputed_daily_activity, aes(total)) + 
     geom_histogram(binwidth = 1000, color = "cadetblue4", fill = "cadetblue3") + 
     labs(x = "Total number of steps taken everyday", y = "Count",
@@ -149,7 +149,7 @@ activity_imputed_weekdays %>%
     ) -> interval_activity_imputed_weekdays
 ```
 
-```{r time series plot for weekdays and weekends}
+```{r time_series_plot_for_weekdays_and_weekends}
 ggplot(interval_activity_imputed_weekdays, aes(x = interval, y = mean_steps)) + 
     geom_line(color = "firebrick4") +
     facet_grid(day_type ~.) +

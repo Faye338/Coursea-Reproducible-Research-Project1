@@ -55,7 +55,7 @@ ggplot(daily_activity, aes(total)) +
 ## Warning: Removed 8 rows containing non-finite outside the scale range (`stat_bin()`).
 ```
 
-![](Pa1_template_files/figure-html/histogram of total number of steps taken each day-1.png)<!-- -->
+![plot of chunk histogram_of_total_number_of_steps_taken_each_day](figure/histogram_of_total_number_of_steps_taken_each_day-1.png)
 
 
 ``` r
@@ -87,7 +87,7 @@ ggplot(interval_activity, aes(x = interval, y = mean_steps)) +
     theme_minimal()
 ```
 
-![](Pa1_template_files/figure-html/time series plot-1.png)<!-- -->
+![plot of chunk time_series_plot](figure/time_series_plot-1.png)
 
 
 ``` r
@@ -150,7 +150,7 @@ ggplot(imputed_daily_activity, aes(total)) +
     theme_minimal()
 ```
 
-![](Pa1_template_files/figure-html/histogram of total number of steps taken everyday after imputation-1.png)<!-- -->
+![plot of chunk histogram_of_total_number_of_steps_taken_everyday_after_imputation](figure/histogram_of_total_number_of_steps_taken_everyday_after_imputation-1.png)
 
 
 ``` r
@@ -199,7 +199,7 @@ ggplot(interval_activity_imputed_weekdays, aes(x = interval, y = mean_steps)) +
     theme_bw()
 ```
 
-![](Pa1_template_files/figure-html/time series plot for weekdays and weekends-1.png)<!-- -->
+![plot of chunk time_series_plot_for_weekdays_and_weekends](figure/time_series_plot_for_weekdays_and_weekends-1.png)
 
 
 
